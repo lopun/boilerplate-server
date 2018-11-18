@@ -1,15 +1,16 @@
 version: "3"
 services:
-  mysql:
-    image: "mysql:5.7.10"
-    container_name: "pf_db"
+  boilerplate_db:
+    image: "postgres"
+    container_name: "boilerplate"
     ports:
-      - "16720:3306"
+      - "5432:5432"
     environment:
-      MYSQL_ROOT_PASSWORD: "password"
-      MYSQL_DATABASE: "portfolio"
+      POSTGRES_USER: lopun
+      POSTGRES_PASSWORD: bpdbdb
+      POSTGRES_DB: boilerplate
     volumes:
-      - pf_db:/var/lib/mysql
+      - bp_data:/var/lib/postgresql/data
 volumes:
-  pf_db:
+  bp_data:
     driver: "local"
