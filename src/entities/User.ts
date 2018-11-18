@@ -1,22 +1,11 @@
 import bcrypt from "bcrypt";
 import { IsEmail } from "class-validator";
-import {
-  BaseEntity,
-  BeforeInsert,
-  BeforeUpdate,
-  Column,
-  CreateDateColumn,
-  Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity } from "typeorm";
+import Abstract from "./Abstract";
 const BCRYPT_ROUNDS = 10;
 
 @Entity()
-class User extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+class User extends Abstract {
   @Column({ type: "text", nullable: true })
   @IsEmail()
   email: string | null;
@@ -30,14 +19,8 @@ class User extends BaseEntity {
   @Column({ type: "int", nullable: true })
   age: number;
 
-  @Column({ type: "text" })
+  @Column({ type: "text", select: false })
   password: string;
-
-  @CreateDateColumn()
-  createdAt: string;
-
-  @UpdateDateColumn()
-  updatedAt: string;
 
   get fullName(): string {
     return `${this.firstName} ${this.lastName}`;
