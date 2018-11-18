@@ -1,16 +1,32 @@
 version: "3"
 services:
-  boilerplate_db:
-    image: "postgres"
-    container_name: "boilerplate"
+  mysql:
+    image: "mysql:5.7.10"
+    container_name: "bp_db"
     ports:
-      - "5432:5432"
+      - "16000:3306"
     environment:
-      POSTGRES_USER: lopun
-      POSTGRES_PASSWORD: bpdbdb
-      POSTGRES_DB: boilerplate
+      MYSQL_ROOT_PASSWORD: "bpdbdb"
+      MYSQL_DATABASE: "boilerplate"
     volumes:
-      - bp_data:/var/lib/postgresql/data
+      - bp_db:/var/lib/mysql
+    networks: # 서버와 같은 네트워크, 잊지 마세요!
+      - backend
+  redis:
+    container_name: redis
+    image: redis:4.0.8-alpine # 역시 alpine 이미지를 사용해줍니다.
+    ports:
+      - "10051:6379"
+    volumes:
+      - redis:/data/redis
+    restart: always
+    networks: # 서버와 같은 네트워크, 잊지 마세요!
+      - backend
+networks:
+  backend:
+    driver: bridge
 volumes:
-  bp_data:
+  bp_db:
+    driver: "local"
+  redis:
     driver: "local"

@@ -1,22 +1,30 @@
 import cors from "cors";
 import { GraphQLServer } from "graphql-yoga";
+import { RedisPubSub } from "graphql-redis-subscriptions";
+import Redis from "ioredis";
+import { redisOptions } from "./redisConfig";
 import helmet from "helmet";
 import logger from "morgan";
 import schema from "./schema";
 import decodeJWT from "./utils/decodeJWT";
 import { NextFunction, Response } from "express";
-import { spawn } from "child_process";
 
 class App {
   public app: GraphQLServer;
+  public pubSub: RedisPubSub;
   constructor() {
+    this.pubSub = new RedisPubSub({
+      publisher: new Redis(redisOptions),
+      subscriber: new Redis(redisOptions)
+    });
     this.app = new GraphQLServer({
       schema,
       context: req => {
         const { connection: { context = null } = {} } = req;
         return {
           req: req.request,
-          context: context
+          pubSub: this.pubSub,
+          context
         };
       }
     });
@@ -27,16 +35,6 @@ class App {
     this.app.express.use(logger("dev"));
     this.app.express.use(helmet());
     this.app.express.use(this.jwt);
-    this.app.express.get(
-      "/croller/:name",
-      async ({ params: { name } }, res) => {
-        const pyProgress = spawn("python", ["croller.py", name]);
-        await pyProgress.stdout.on("data", function(data) {
-          const result = data.toString().replace(/\'/g, '"');
-          res.send(result);
-        });
-      }
-    );
   };
 
   private jwt = async (
