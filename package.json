@@ -21,7 +21,10 @@
     "build": "tsc",
     "postbuild": "npx copy ./src/api/**/*.graphql ./dist/src/api && npx copy ./src/croller.py ./dist/src",
     "prestart": "yarn build",
-    "start": "cross-env NODE_PATH=dist/ forever start dist/src/index.js"
+    "start": "cross-env NODE_PATH=dist/ forever start dist/src/index.js",
+    "typeorm:cli": "ts-node ./node_modules/.bin/typeorm -f ./src/ormConfig.ts",
+    "migration:generate": "npm run typeorm:cli -- migration:generate -n",
+    "migration:run": "npm run typeorm:cli -- migration:run"
   },
   "dependencies": {
     "apollo-server": "^2.1.0",

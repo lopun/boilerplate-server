@@ -4,9 +4,9 @@ dotenv.config({
   path: process.env.NODE_ENV === "development" ? ".env" : ".env.production"
 });
 
-import app from "./app";
-import { createConnection } from "typeorm";
 import { Options } from "graphql-yoga";
+import { createConnection } from "typeorm";
+import app from "./app";
 import defaultConnectOptions from "./ormConfig";
 import decodeJWT from "./utils/decodeJWT";
 
@@ -22,7 +22,7 @@ const appOptions: Options = {
   subscriptions: {
     path: SUBSCRIPTION_ENDPOINT,
     onConnect: async connectionParams => {
-      const token = connectionParams["JWT"];
+      const token = connectionParams.JWT;
       if (token) {
         const user = await decodeJWT(token);
         if (user) {
@@ -41,7 +41,8 @@ const handleAppStart = () => console.log(`Listening on port ${PORT}`);
 
 // db 연결
 createConnection(defaultConnectOptions)
-  .then(() => {
+  .then(async connection => {
+    await connection.runMigrations();
     app.start(appOptions, handleAppStart);
   })
   .catch(err => console.log(err));
