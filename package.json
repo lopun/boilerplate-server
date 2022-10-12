@@ -27,7 +27,7 @@
     "migration:run": "npm run typeorm:cli -- migration:run"
   },
   "dependencies": {
-    "apollo-server": "^2.1.0",
+    "apollo-server": "^2.25.4",
     "apollo-server-express": "^2.1.0",
     "babel-runtime": "^6.26.0",
     "bcrypt": "^3.0.2",
